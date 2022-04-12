@@ -4,24 +4,37 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane fx:id="backPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.GameScreenController">
+<GridPane fx:id="backGrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.GameScreenController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
    <children>
-      <ImageView fx:id="player3View" fitHeight="225.0" fitWidth="150.0" layoutX="14.0" layoutY="54.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="150.0">
-         <image>
-            <Image url="@card.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="player1View" fitHeight="225.0" fitWidth="150.0" layoutX="500.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="150.0">
-         <image>
-            <Image url="@card.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="player2View" fitHeight="225.0" fitWidth="150.0" layoutX="457.0" layoutY="164.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="600.0" AnchorPane.leftAnchor="525.0" AnchorPane.rightAnchor="525.0" AnchorPane.topAnchor="25.0">
-         <image>
-            <Image url="@card.png" />
-         </image>
-      </ImageView>
-      <Label fx:id="targetAreaLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="300.0" layoutY="348.0" maxHeight="225.0" maxWidth="225.0" minHeight="225.0" prefHeight="225.0" prefWidth="600.0" text="Sem přetáhněte kartu pro zahrání" textOverrun="CENTER_ELLIPSIS" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="275.0" />
+      <AnchorPane fx:id="backPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <children>
+            <ImageView fx:id="player3View" fitHeight="225.0" fitWidth="150.0" layoutX="14.0" layoutY="54.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="150.0">
+               <image>
+                  <Image url="@card.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="player1View" fitHeight="225.0" fitWidth="150.0" layoutX="500.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="150.0">
+               <image>
+                  <Image url="@card.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="player2View" fitHeight="225.0" fitWidth="150.0" layoutX="457.0" layoutY="164.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="600.0" AnchorPane.leftAnchor="525.0" AnchorPane.rightAnchor="525.0" AnchorPane.topAnchor="25.0">
+               <image>
+                  <Image url="@card.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="targetAreaLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="300.0" layoutY="348.0" maxHeight="225.0" maxWidth="225.0" minHeight="225.0" prefHeight="225.0" prefWidth="600.0" text="Sem přetáhněte kartu pro zahrání" textOverrun="CENTER_ELLIPSIS" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="275.0" />
+         </children>
+      </AnchorPane>
    </children>
-</AnchorPane>
+</GridPane>

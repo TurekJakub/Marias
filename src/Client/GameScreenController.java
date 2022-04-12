@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 
 /**
  * FXML Controller class
@@ -28,10 +29,13 @@ public class GameScreenController implements Initializable {
     AnchorPane backPane;
     @FXML
     Label targetAreaLabel;
+    @FXML
+    GridPane backGrid;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
+        backGrid.setStyle("-fx-background-color:#074212");
         targetAreaLabel.setStyle("-fx-background-color:#cfd1cf");
         backPane.setStyle("-fx-background-color:#074212");
         addCardsImages(initializeCards());
