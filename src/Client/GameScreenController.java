@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -25,10 +26,14 @@ public class GameScreenController implements Initializable {
      */
     @FXML
     AnchorPane backPane;
+    @FXML
+    Label targetAreaLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        
+        targetAreaLabel.setStyle("-fx-background-color:#cfd1cf");
+        backPane.setStyle("-fx-background-color:#074212");
         addCardsImages(initializeCards());
 
     }
@@ -62,7 +67,7 @@ public class GameScreenController implements Initializable {
             imageViews[i].setFitHeight(225);
             imageViews[i].setFitWidth(150);
             imageViews[i].setDefaultX(i * 150);
-            imageViews[i].setDefaultY(375);
+            imageViews[i].setDefaultY(525);
             imageViews[i].setOnMousePressed(event -> handleOnMousePressed(event));
             imageViews[i].setOnMouseDragged(event -> handleOnMouseDragged(event));
             imageViews[i].setOnMouseReleased(event -> handleOnMouseReleased(event));
