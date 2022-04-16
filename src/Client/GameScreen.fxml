@@ -16,7 +16,7 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <AnchorPane fx:id="backPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <AnchorPane fx:id="frontPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <children>
             <ImageView fx:id="player3View" fitHeight="225.0" fitWidth="150.0" layoutX="14.0" layoutY="54.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="150.0">
                <image>

@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -26,26 +27,27 @@ public class GameScreenController implements Initializable {
      * Initializes the controller class.
      */
     @FXML
-    AnchorPane backPane;
+    AnchorPane frontPane;
     @FXML
     Label targetAreaLabel;
     @FXML
     GridPane backGrid;
+   
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
         backGrid.setStyle("-fx-background-color:#074212");
         targetAreaLabel.setStyle("-fx-background-color:#cfd1cf");
-        backPane.setStyle("-fx-background-color:#074212");
+        frontPane.setStyle("-fx-background-color:#074212");
         addCardsImages(initializeCards());
 
     }
 
-    private void handleOnMousePressed(MouseEvent event) {
+   private void handleOnMousePressed(MouseEvent event) {
         ImageViewWithCoordinates i = (ImageViewWithCoordinates) event.getSource();
         i.setCursorX(i.getLayoutX() - event.getSceneX());
-        i.setCursorX(i.getLayoutY() - event.getSceneY());
+        i.setCursorY(i.getLayoutY() - event.getSceneY());
     }
 
     private void handleOnMouseDragged(MouseEvent event) {
@@ -59,6 +61,10 @@ public class GameScreenController implements Initializable {
         i.setLayoutX(i.getDefaultX());
         i.setLayoutY(i.getDefaultY());
     }
+
+    
+
+   
 
     @FXML
     private ImageViewWithCoordinates[] initializeCards() {
@@ -75,6 +81,7 @@ public class GameScreenController implements Initializable {
             imageViews[i].setOnMousePressed(event -> handleOnMousePressed(event));
             imageViews[i].setOnMouseDragged(event -> handleOnMouseDragged(event));
             imageViews[i].setOnMouseReleased(event -> handleOnMouseReleased(event));
+            imageViews[i].setCache(true);
 
         }
         return imageViews;
@@ -84,7 +91,7 @@ public class GameScreenController implements Initializable {
     private void addCardsImages(ImageViewWithCoordinates[] images) {
 
         for (int i = 0; i < 8; i++) {
-            backPane.getChildren().add(images[i]);
+            frontPane.getChildren().add(images[i]);
 
             images[i].setLayoutX(images[i].getDefaultX());
             images[i].setLayoutY(images[i].getDefaultY());
