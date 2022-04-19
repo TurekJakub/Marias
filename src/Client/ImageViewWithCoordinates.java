@@ -18,9 +18,19 @@ public class ImageViewWithCoordinates extends ImageView {
     private double defaultY;
     private double cursorX;
     private double cursorY;
+    private boolean inactive;
 
     public ImageViewWithCoordinates(Image image) {
         super(image);
+        inactive = false;
+    }
+
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
+    }
+
+    public boolean isInactive() {
+        return inactive;
     }
 
     public void setCursorX(double cursorX) {
@@ -37,7 +47,7 @@ public class ImageViewWithCoordinates extends ImageView {
 
     public void setDefaultY(double defaultY) {
         this.defaultY = defaultY;
-    }    
+    }
 
     public double getDefaultX() {
         return defaultX;

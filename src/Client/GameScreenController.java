@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import shared.Card;
 
 /**
  * FXML Controller class
@@ -27,47 +28,66 @@ public class GameScreenController implements Initializable {
      * Initializes the controller class.
      */
     @FXML
-    AnchorPane frontPane;
+    AnchorPane frontPane; // odkaz na AnchorPane definovaný pomocí Scene Builderu v .fxml souboru
     @FXML
     Label targetAreaLabel;
     @FXML
     GridPane backGrid;
-   
+    ImageViewWithCoordinates[] cards;
 
     @Override
+    // Zavolá se při otevření daného okna, takže zde volám metody, které mají přidat do okny prvky před jeho zobrazením
     public void initialize(URL url, ResourceBundle rb) {
-        
-        backGrid.setStyle("-fx-background-color:#074212");
-        targetAreaLabel.setStyle("-fx-background-color:#cfd1cf");
-        frontPane.setStyle("-fx-background-color:#074212");
-        addCardsImages(initializeCards());
+        cards = initializeCards();
+        addCards(cards);
+        deactivateAllCards();
 
     }
 
-   private void handleOnMousePressed(MouseEvent event) {
+    private void handelOnMouseEntered(MouseEvent event) {
         ImageViewWithCoordinates i = (ImageViewWithCoordinates) event.getSource();
-        i.setCursorX(i.getLayoutX() - event.getSceneX());
-        i.setCursorY(i.getLayoutY() - event.getSceneY());
+
+        if (!i.isInactive()) {
+            i.setCursor(Cursor.HAND);
+        }
+
+    }
+
+    private void handleOnMousePressed(MouseEvent event) {
+        ImageViewWithCoordinates i = (ImageViewWithCoordinates) event.getSource();
+        if (!i.isInactive()) {
+            i.setCursorX(i.getLayoutX() - event.getSceneX());
+            i.setCursorY(i.getLayoutY() - event.getSceneY());
+            i.setCursor(Cursor.CLOSED_HAND);
+        }
     }
 
     private void handleOnMouseDragged(MouseEvent event) {
         ImageViewWithCoordinates i = (ImageViewWithCoordinates) event.getSource();
-        i.setLayoutX(event.getSceneX() + i.getCursorX());
-        i.setLayoutY(event.getSceneY() + i.getCursorY());
+        if (!i.isInactive()) {
+            i.setLayoutX(event.getSceneX() + i.getCursorX());
+            i.setLayoutY(event.getSceneY() + i.getCursorY());
+        }
     }
 
     private void handleOnMouseReleased(MouseEvent event) {
         ImageViewWithCoordinates i = (ImageViewWithCoordinates) event.getSource();
-        i.setLayoutX(i.getDefaultX());
-        i.setLayoutY(i.getDefaultY());
+        boolean b = i.getLayoutX() > 300 && i.getLayoutX() < 900;
+        boolean a = i.getLayoutY() > 275 && i.getLayoutY() < 500;
+        if (b && a) {
+            System.err.println("Je to tam!");
+            i.setLayoutX(300);
+            i.setLayoutY(275);
+
+        } else {
+            i.setLayoutX(i.getDefaultX());
+            i.setLayoutY(i.getDefaultY());
+        }
+
     }
 
-    
-
-   
-
     @FXML
-    private ImageViewWithCoordinates[] initializeCards() {
+    private ImageViewWithCoordinates[] initializeCards() { // Nepříliš duležitá metoda, která vrátí pole ImageView s nastavenými parametry
         ImageViewWithCoordinates[] imageViews = new ImageViewWithCoordinates[8];
         Image image = new Image(getClass().getResourceAsStream("card.png"));
 
@@ -81,22 +101,44 @@ public class GameScreenController implements Initializable {
             imageViews[i].setOnMousePressed(event -> handleOnMousePressed(event));
             imageViews[i].setOnMouseDragged(event -> handleOnMouseDragged(event));
             imageViews[i].setOnMouseReleased(event -> handleOnMouseReleased(event));
-            imageViews[i].setCache(true);
+            imageViews[i].setOnMouseEntered(event -> handelOnMouseEntered(event));
+            imageViews[i].getStyleClass().add("gamescreen.css");
+            imageViews[i].applyCss();
 
         }
         return imageViews;
     }
 
     @FXML
-    private void addCardsImages(ImageViewWithCoordinates[] images) {
+    private void addCards(ImageViewWithCoordinates[] images) { // metoda, která přidá prvky z pole vráceného předchozí metodou do AnchorPanu.
 
-        for (int i = 0; i < 8; i++) {
-            frontPane.getChildren().add(images[i]);
-
-            images[i].setLayoutX(images[i].getDefaultX());
-            images[i].setLayoutY(images[i].getDefaultY());
+        for (ImageViewWithCoordinates image : images) {
+            frontPane.getChildren().add(image); // přidání ImageView do AnchorPanu
+            // Nastavení jejich umístění na požadované souřadnice
+            image.setLayoutX(image.getDefaultX());
+            image.setLayoutY(image.getDefaultY());
         }
 
+    }
+
+    @FXML
+    public void deactivateAllCards() {
+        for (ImageViewWithCoordinates card : cards) {
+            card.setInactive(true);
+        }
+
+    }
+
+    @FXML
+    public void activatePlayable(int index) {
+        cards[index].setInactive(false);
+    }
+
+    @FXML
+    public void activateAll() {
+        for (ImageViewWithCoordinates i : cards) {
+            i.setInactive(false);
+        }
     }
 
 }

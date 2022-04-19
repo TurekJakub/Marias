@@ -2,6 +2,13 @@
  * Empty Stylesheet file.
  */
 
-.mainFxmlClass {
 
+
+.pane{
+    -fx-background-color:#074212
+}
+.label{
+    -fx-background-color:#cfd1cf;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
 }
