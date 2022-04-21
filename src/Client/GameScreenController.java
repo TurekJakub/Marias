@@ -15,7 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import shared.Card;
 
 /**
  * FXML Controller class
@@ -40,7 +39,7 @@ public class GameScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         cards = initializeCards();
         addCards(cards);
-        deactivateAllCards();
+       
 
     }
 

@@ -27,24 +27,13 @@ public class NewClass extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException, InterruptedException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("GameScreen.fxml"));
+        loader.setLocation(getClass().getResource("MainScreen.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         primaryStage.setTitle("Kalkulátor");
         primaryStage.setScene(scene);
         primaryStage.show();
-        GameScreen g = new GameScreen("S", loader.getController());
-        GameManager ge = new GameManager();
-
-        Card[] f = ge.getPlayersCardsSet(0).toArray(new Card[8]);
-        for (int i = 0; i < 8; i++) {
-            System.out.println(f[i].toString());
-           if (f[i].getColor().equals("L") ||f[i].getColor().equals("S") ) {
-                f[i] = null;
-            }
-        }
-
-        g.activatePlayableCards(f, "L", "L", "8");
+       
 
     }
 
