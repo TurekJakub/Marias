@@ -6,8 +6,11 @@
 package Client;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 
 /**
  * FXML Controller class
@@ -19,9 +22,19 @@ public class ExistingGamesScreenController implements Initializable {
     /**
      * Initializes the controller class.
      */
+    @FXML
+    ListView gamePickerView;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+       
     }    
-    
+    public void createViewContent(ArrayList<ServerPrametr> param){
+        gamePickerView.getItems().removeAll();
+        for(ServerPrametr sp : param){
+            
+            gamePickerView.getItems().add(sp.getName());
+        
+        }
+        
+    }
 }

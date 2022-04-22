@@ -33,7 +33,7 @@ public class MainScreenController implements Initializable {
     @FXML
     public void handelClicJoin(ActionEvent event) {
         Button b = (Button) event.getSource();
-        mainScreen.changeScene("GameScreen.fxml", (Stage) b.getScene().getWindow());
+        mainScreen.changeScene("ExistingGamesScreen.fxml", (Stage) b.getScene().getWindow());
     }
 
     @FXML

@@ -19,28 +19,28 @@ import java.util.logging.Logger;
  * @author jakub
  */
 public class ExistingGameFinder extends Thread {
-    
+
     private final byte[] buffer;
-    private final List<String[]> existingGames;
+    private final List<ServerPrametr> existingGames;
     MulticastSocket socket;
     InetAddress group;
     boolean interupted;
-    
+
     public ExistingGameFinder() {
         try {
-            socket = new MulticastSocket(9999);
-            group = InetAddress.getByName("230.0.0.0");
+            socket = new MulticastSocket(4446);
+            group = InetAddress.getByName("239.0.0.0");
         } catch (IOException ex) {
-            
+
         }
         existingGames = new ArrayList<>();
         buffer = new byte[1024];
         interupted = false;
     }
-    
+
     @Override
     public void run() {
-        
+
         try {
             socket.joinGroup(group);
         } catch (IOException ex) {
@@ -48,35 +48,30 @@ public class ExistingGameFinder extends Thread {
         }
         while (!interupted) {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            
+
             try {
                 socket.receive(packet);
             } catch (IOException ex) {
                 Logger.getLogger(ExistingGameFinder.class.getName()).log(Level.SEVERE, null, ex);
             }
-            String s = new String(packet.getData(), 0, packet.getLength());
-            System.err.println(s);
-            String[] parametrs = s.split(":");
-            if (!existingGames.contains(parametrs)) {
-                existingGames.add(parametrs);
+            String[] s = new String(packet.getData(), 0, packet.getLength()).split(":");
+            ServerPrametr parametr = new ServerPrametr(s[0],s[2],Integer.parseInt(s[1]));
+            if (!existingGames.contains(parametr)) {
+                existingGames.add(parametr);
             }
-            System.out.print(existingGames.size());
+            System.err.println(existingGames.size());
         }
         socket.close();
+        
     }
-    
-    public synchronized List<String[]> getExistingGames() {
+
+    public synchronized List<ServerPrametr> getExistingGames() {
         return existingGames;
     }
-    
+
     @Override
     public synchronized void interrupt() {
         interupted = true;
-    }
-
-    public static void main(String[] args) {
-        ExistingGameFinder f = new ExistingGameFinder();
-        f.start();
     }
     
 }

@@ -29,7 +29,7 @@ public class ServerInfoSender extends Thread {
     public ServerInfoSender(String message) {
         try {
             socket = new DatagramSocket();
-            group = InetAddress.getByName("230.0.0.0");
+            group = InetAddress.getByName("239.0.0.0");
         } catch (SocketException ex) {
             Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
@@ -41,12 +41,12 @@ public class ServerInfoSender extends Thread {
     }
 
     @Override
-    public  void start() {
+    public void run() {
         while (!interupted) {
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group,9999);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, 4446);
             try {
                 socket.send(packet);
-                System.out.println("game.ServerInfoSender.start()");                
+
             } catch (IOException ex) {
                 Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -55,14 +55,14 @@ public class ServerInfoSender extends Thread {
             } catch (InterruptedException ex) {
                 Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
 
         }
         socket.close();
     }
-    public static void main(String[] args) {
-        ServerInfoSender s = new ServerInfoSender("Hola");
-        s.start();
+
+    @Override
+    public void interrupt() {
+        interupted = true;
     }
 
 }

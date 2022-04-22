@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,14 +22,11 @@ public class tesst {
     public static void main(String[] args) throws IOException, InterruptedException {
         ExistingGameFinder f = new ExistingGameFinder();
         f.start();
-        Thread.sleep(4000);
+        Thread.sleep(5000);
+        ServerPrametr sp = f.getExistingGames().get(0);
+        
+        Socket s = new Socket(sp.getIp(),sp.getPort());
         f.interrupt();
-        List<String[]> p = f.getExistingGames();
-        String[] i =  p.get(0);
-     
-        System.out.print(i.length);
-        int ii = Integer.getInteger(i[1]);
-        Socket s = new Socket("localhost",ii);
         BufferedWriter w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
         
         Scanner ss = new Scanner(System.in);       

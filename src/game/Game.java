@@ -6,8 +6,10 @@
 package game;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.Card;
@@ -26,43 +28,42 @@ public class Game extends Thread {
     Sender sender;
     GameManager manager;
     ServerInfoSender infoSender;
+    private String mesString;
 
-    public Game(int port, String name) {
-        
+    public Game(int port, String name) throws UnknownHostException {
 
+        mesString = name + ":" + String.valueOf(port) + ":" + InetAddress.getLocalHost().getHostAddress().trim();
+        infoSender = new ServerInfoSender(mesString);
+        infoSender.start();
         try {
             server = new ServerSocket(port);
-            System.out.println(server.getInetAddress().getHostAddress());
-            String message = name + ":" + String.valueOf(port) + ":" + server.getInetAddress().getHostAddress();
-            infoSender = new ServerInfoSender(message);
-           
+            connectPlayers();
         } catch (IOException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.name = name;
+
         receiver = new Receiver();
         sender = new Sender(playerSockets);
         players = new Player[]{new Player(0, "Tony"), new Player(0, "Tony1"), new Player(0, "Tony2"), new Player(0, "Tony3")};
         manager = new GameManager();
-        try {
-            playerSockets = connectPlayers();
-        } catch (IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
     }
 
-    private Socket[] connectPlayers() throws IOException {
-        infoSender.start();
+    private void connectPlayers() throws IOException {
+
         Socket[] sockets = new Socket[4];
         for (int i = 0; i < sockets.length; i++) {
             sockets[i] = server.accept();
 
+            System.err.println("Join");
+
         }
-        return sockets;
+        infoSender.interrupt();
+        playerSockets = sockets;
     }
 
     public void startGameLoop() throws IOException {
+
         Card[] playedCards = new Card[4];
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < playerSockets.length; j++) {
@@ -90,8 +91,13 @@ public class Game extends Thread {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public String getMesString() {
+        return mesString;
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
         Game g = new Game(8080, "5");
+        g.start();
 
     }
 
