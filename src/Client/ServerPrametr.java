@@ -5,6 +5,8 @@
  */
 package Client;
 
+import java.util.Objects;
+
 /**
  *
  * @author jakub
@@ -37,6 +39,15 @@ public class ServerPrametr {
     public boolean equals(Object obj) {
         ServerPrametr par = (ServerPrametr) obj;
         return ip.equals(par.getIp()) && port == par.getPort() && name.equals(par.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 47 * hash + Objects.hashCode(this.name);
+        hash = 47 * hash + Objects.hashCode(this.ip);
+        hash = 47 * hash + this.port;
+        return hash;
     }
 
 }

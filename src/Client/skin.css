@@ -1,0 +1,26 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+
+.pane{
+    -fx-background-color:#074212
+}
+.button{
+    -fx-background-color:#cfd1cf;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-pref-height: 50;
+    -fx-pref-width: 100;
+}
+.label{
+    -fx-background-color:#cfd1cf;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+}
+.listView{    
+    -fx-background-color:#cfd1cf;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    
+}

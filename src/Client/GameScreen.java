@@ -17,10 +17,10 @@ public class GameScreen {
 
     GameScreenController controller;
     CardManager manager;
-    private final String TRUMPHCOLOR;
+    private  String trumphColor;
 
-    public GameScreen(String TRUMPHCOLOR, GameScreenController controller) {
-        this.TRUMPHCOLOR = TRUMPHCOLOR;
+    public GameScreen(String trumphColor, GameScreenController controller) {
+        this.trumphColor = trumphColor;
         this.controller = controller;
         manager = new CardManager();
     }
@@ -35,8 +35,8 @@ public class GameScreen {
         if (lastColor.equals(roundColor)) {
             findPlayableCards(cards, roundColor, lastColor, lastValue);
         }
-        if (lastColor.equals(TRUMPHCOLOR) || !oneActivate) {
-             findPlayableCards(cards, TRUMPHCOLOR, lastColor, lastValue);
+        if (lastColor.equals(trumphColor) || !oneActivate) {
+             findPlayableCards(cards, trumphColor, lastColor, lastValue);
         }
         if (!oneActivate) {
             controller.activateAll();
@@ -51,8 +51,7 @@ public class GameScreen {
             if (cards[i] != null) {
                 boolean b = manager.getVALUES_OF_CARDS().indexOf(cards[i].getValue()) > manager.getVALUES_OF_CARDS().indexOf(lastValue);
                 if (cards[i].getColor().equals(roundColor) && b) {
-                    oneBiggerLast = true;
-                    System.out.println(i);
+                    oneBiggerLast = true;                  
                     controller.activatePlayable(i);
                     oneActivate = true;
                 } else if (cards[i].getColor().equals(roundColor) && !oneBiggerLast) {
@@ -74,5 +73,15 @@ public class GameScreen {
         return oneActivate;
 
     }
+
+    public String gettrumphColor() {
+        return trumphColor;
+    }
+
+    public void setTrumphColor(String trumphColor) {
+        if(this.trumphColor ==  null){
+        this.trumphColor = trumphColor;}
+    }
+    
 
 }

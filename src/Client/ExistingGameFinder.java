@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class ExistingGameFinder extends Thread {
 
     private final byte[] buffer;
-    private final List<ServerPrametr> existingGames;
+    private List<ServerPrametr> existingGames;
     MulticastSocket socket;
     InetAddress group;
     boolean interupted;
@@ -55,23 +55,25 @@ public class ExistingGameFinder extends Thread {
                 Logger.getLogger(ExistingGameFinder.class.getName()).log(Level.SEVERE, null, ex);
             }
             String[] s = new String(packet.getData(), 0, packet.getLength()).split(":");
-            ServerPrametr parametr = new ServerPrametr(s[0],s[2],Integer.parseInt(s[1]));
+            ServerPrametr parametr = new ServerPrametr(s[0], s[2], Integer.parseInt(s[1]));
             if (!existingGames.contains(parametr)) {
                 existingGames.add(parametr);
             }
-            System.err.println(existingGames.size());
+
         }
         socket.close();
-        
+
     }
 
     public synchronized List<ServerPrametr> getExistingGames() {
-        return existingGames;
+        List<ServerPrametr> sp = List.copyOf(existingGames);
+        existingGames.clear();
+        return sp;
     }
 
     @Override
     public synchronized void interrupt() {
         interupted = true;
     }
-    
+
 }

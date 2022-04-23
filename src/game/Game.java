@@ -5,6 +5,8 @@
  */
 package game;
 
+import shared.Sender;
+import shared.Receiver;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -22,18 +24,17 @@ public class Game extends Thread {
 
     private ServerSocket server;
     private Socket[] playerSockets;
-    private Receiver receiver;
+    private final Receiver receiver;
     private Player[] players;
-    private String name;
+
     Sender sender;
     GameManager manager;
     ServerInfoSender infoSender;
-    private String mesString;
 
-    public Game(int port, String name) throws UnknownHostException {
+    public Game(int port, String name) throws UnknownHostException, IOException {
 
-        mesString = name + ":" + String.valueOf(port) + ":" + InetAddress.getLocalHost().getHostAddress().trim();
-        infoSender = new ServerInfoSender(mesString);
+        String message = name + ":" + String.valueOf(port) + ":" + InetAddress.getLocalHost().getHostAddress().trim();
+        infoSender = new ServerInfoSender(message);
         infoSender.start();
         try {
             server = new ServerSocket(port);
@@ -43,15 +44,19 @@ public class Game extends Thread {
         }
 
         receiver = new Receiver();
-        sender = new Sender(playerSockets);
-        players = new Player[]{new Player(0, "Tony"), new Player(0, "Tony1"), new Player(0, "Tony2"), new Player(0, "Tony3")};
+        sender = new Sender();
+        players = new Player[]{new Player(0, null), new Player(0, null),
+            new Player(0, null), new Player(0, null)};
         manager = new GameManager();
-
+        //  System.out.println(receiver.read(playerSockets[0]));
+        boolean b = true;
+        sender.SingelsendData(b, playerSockets[0]);
+        
     }
 
     private void connectPlayers() throws IOException {
 
-        Socket[] sockets = new Socket[4];
+        Socket[] sockets = new Socket[1];
         for (int i = 0; i < sockets.length; i++) {
             sockets[i] = server.accept();
 
@@ -91,13 +96,8 @@ public class Game extends Thread {
         }
     }
 
-    public String getMesString() {
-        return mesString;
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        Game g = new Game(8080, "5");
-        g.start();
+        Game g = new Game(8081, "8");
 
     }
 

@@ -39,6 +39,7 @@ public class GameScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         cards = initializeCards();
         addCards(cards);
+        deactivateAllCards();
        
 
     }
@@ -139,5 +140,6 @@ public class GameScreenController implements Initializable {
             i.setInactive(false);
         }
     }
+   
 
 }

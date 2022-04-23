@@ -5,11 +5,14 @@
  */
 package Client;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
@@ -23,7 +26,9 @@ public class MainScreenController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    MainScreen mainScreen = new MainScreen();
+    ScreenManager mainScreen = new ScreenManager();
+    ExistingGamesScreen existingGamesScreen;
+    FXMLLoader loader = new FXMLLoader();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -33,19 +38,41 @@ public class MainScreenController implements Initializable {
     @FXML
     public void handelClicJoin(ActionEvent event) {
         Button b = (Button) event.getSource();
-        mainScreen.changeScene("ExistingGamesScreen.fxml", (Stage) b.getScene().getWindow());
+        try {
+            mainScreen.changeScene("ExistingGamesScreen.fxml", (Stage) b.getScene().getWindow());
+        } catch (IOException ex) {
+            showErrorWindow(ex);
+        }
+
     }
 
     @FXML
     public void handelClicNew(ActionEvent event) {
         Button b = (Button) event.getSource();
-        mainScreen.changeScene("GameScreen.fxml", (Stage) b.getScene().getWindow());
+        try {
+            mainScreen.changeScene("GameScreen.fxml", (Stage) b.getScene().getWindow());
+        } catch (IOException ex) {
+            showErrorWindow(ex);
+        }
     }
 
     @FXML
     public void handelClicHelp(ActionEvent event) {
         Button b = (Button) event.getSource();
-        mainScreen.changeScene("GameScreen.fxml", (Stage) b.getScene().getWindow());
+        try {
+            mainScreen.changeScene("GameScreen.fxml", (Stage) b.getScene().getWindow());
+        } catch (IOException ex) {
+            showErrorWindow(ex);
+        }
+    }
+
+    private void showErrorWindow(IOException ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Chyba");
+        alert.setHeaderText("Chyba při načítání souboru aplikace");
+        alert.setContentText(ex.getMessage());
+        alert.showAndWait();
+
     }
 
 }
