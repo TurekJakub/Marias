@@ -60,8 +60,9 @@ public class MainScreenController implements Initializable {
     public void handelClicHelp(ActionEvent event) {
         Button b = (Button) event.getSource();
         try {
-            mainScreen.changeScene("GameScreen.fxml", (Stage) b.getScene().getWindow());
+            mainScreen.changeScene("trumphDialog.fxml", (Stage) b.getScene().getWindow());
         } catch (IOException ex) {
+            System.out.println(ex.getMessage());
             showErrorWindow(ex);
         }
     }

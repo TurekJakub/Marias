@@ -29,7 +29,7 @@ public class ExistingGamesScreen extends Thread {
         this.existingGamesController = existingGamesController;
         finder = new ExistingGameFinder();
         interupted = false;
-        COLDOWN = 10000;
+        COLDOWN = 4000;
     }
 
     @Override

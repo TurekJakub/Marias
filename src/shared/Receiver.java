@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author jakub
  */
-public class Receiver extends Thread {
+public class Receiver  {
 
     public Receiver() {
 
@@ -37,12 +37,6 @@ public class Receiver extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);
 
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
         return o;
     }

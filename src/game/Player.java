@@ -13,12 +13,13 @@ import shared.Card;
  * @author jakub
  */
 public class Player {
+
     private int points;
     private LinkedList<Card> cards;
     private String name;
 
     public Player(int points, String name) {
-        this.points = points;        
+        this.points = points;
         this.name = name;
     }
 
@@ -33,7 +34,6 @@ public class Player {
     public int getPoints() {
         return points;
     }
-   
 
     public void updatePoints(int points) {
         this.points += points;
@@ -49,15 +49,13 @@ public class Player {
 
     @Override
     public String toString() {
-        return name + ":"+ points;
+        return name + ":" + points;
     }
-    
-    
-            
-    
-    
-    
-  
-    
-    
+
+    public void setName(String name) {
+        if (this.name == null) {
+            this.name = name;
+        }
+    }
+
 }

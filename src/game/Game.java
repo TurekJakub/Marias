@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shared.Card;
@@ -26,39 +28,42 @@ public class Game extends Thread {
     private Socket[] playerSockets;
     private final Receiver receiver;
     private Player[] players;
-
+    private String trumphColor;
+    private Card playWith;
     Sender sender;
     GameManager manager;
     ServerInfoSender infoSender;
 
-    public Game(int port, String name) throws UnknownHostException, IOException {
+    public Game(int port, String name) throws UnknownHostException {
 
         String message = name + ":" + String.valueOf(port) + ":" + InetAddress.getLocalHost().getHostAddress().trim();
         infoSender = new ServerInfoSender(message);
         infoSender.start();
         try {
             server = new ServerSocket(port);
-            connectPlayers();
+
         } catch (IOException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        connectPlayers();
         receiver = new Receiver();
         sender = new Sender();
         players = new Player[]{new Player(0, null), new Player(0, null),
             new Player(0, null), new Player(0, null)};
         manager = new GameManager();
-        //  System.out.println(receiver.read(playerSockets[0]));
-        boolean b = true;
-        sender.SingelsendData(b, playerSockets[0]);
-        
+        trumphColor = null;
+
     }
 
-    private void connectPlayers() throws IOException {
+    private void connectPlayers() {
 
         Socket[] sockets = new Socket[1];
         for (int i = 0; i < sockets.length; i++) {
-            sockets[i] = server.accept();
+            try {
+                sockets[i] = server.accept();
+            } catch (IOException ex) {
+                continue;
+            }
 
             System.err.println("Join");
 
@@ -67,28 +72,86 @@ public class Game extends Thread {
         playerSockets = sockets;
     }
 
-    public void startGameLoop() throws IOException {
-
-        Card[] playedCards = new Card[4];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < playerSockets.length; j++) {
-                playedCards[j] = receiver.readCard(playerSockets[j]);
-                //  players[i].updateCards(playedCards[i]);
-                sender.sendData(playedCards[j].toString(), playerSockets[j]);
-            }
-            int indexOfWin = manager.getWinerOfRound(playedCards, "L");
-            players[indexOfWin].updatePoints(manager.getRoundPoints(playedCards));
-            sender.sendData(players[indexOfWin].toString(), null);
-            System.out.print(players[indexOfWin].toString());
+    private void setAndSendNames() throws IOException {
+        ArrayList<String> names = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            String name = (String) receiver.read(playerSockets[i]);
+            players[i].setName(name);
+            names.add(name);
 
         }
-        sender.sendData(players[manager.getGameWinner(players)].toString(), null);
-        System.out.println(players[manager.getGameWinner(players)].toString());
+        for (String s : names) {
+            System.out.println(s);
+        }
+        sender.MultisendData(names, null, playerSockets);
+    }
+
+    private void sendPlayersCards() {
+        for (int i = 0; i < 4; i++) {
+            players[i].setCards(manager.getPlayersCardsSet(i));
+            sender.SingelsendData(players[i].getCards(), playerSockets[i]);
+        }
+
+    }
+
+    private void initialize() {
+        try {
+            setAndSendNames();
+            sendPlayersCards();
+            boolean b = true;
+            sender.SingelsendData(b, playerSockets[0]);
+            trumphColor = (String) receiver.read(playerSockets[0]);
+            playWith = (Card) receiver.read(playerSockets[0]);
+            sender.MultisendData(trumphColor, playerSockets[0], playerSockets);
+            sender.MultisendData(playWith, playerSockets[0], playerSockets);
+            sender.MultisendData(players[0].getName(), playerSockets[0], playerSockets);
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private Card[] playOneRound() {
+        Card[] playedCards = new Card[4];
+        for (int i = 0; i < playerSockets.length; i++) {
+            playedCards[i] = (Card) receiver.read(playerSockets[i]);
+            players[i].updateCards(playedCards[i]);
+            try {
+                sender.MultisendData(playedCards[i], playerSockets[i], playerSockets);
+            } catch (IOException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return playedCards;
+    }
+
+    private void evaluateRoud(Card[] playedCards) {
+
+        int indexOfWin = manager.getWinerOfRound(playedCards, trumphColor);
+        int points = manager.getRoundPoints(playedCards);
+        players[indexOfWin].updatePoints(points);
+        try {
+            sender.MultisendData(points, null, playerSockets);
+            sender.MultisendData(players[indexOfWin].getName(), null, playerSockets);
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void startGameLoop() throws IOException {
+
+        for (int i = 0; i < 8; i++) {
+            Card[] cards = playOneRound();
+            evaluateRoud(cards);
+        }
+        sender.MultisendData(players[manager.getGameWinner(players)].toString(), null, playerSockets);
 
     }
 
     @Override
     public void run() {
+        initialize();
         try {
             startGameLoop();
         } catch (IOException ex) {
@@ -98,6 +161,7 @@ public class Game extends Thread {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Game g = new Game(8081, "8");
+        g.start();
 
     }
 

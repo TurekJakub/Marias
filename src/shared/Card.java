@@ -22,7 +22,7 @@ public class Card implements Serializable{
 
     @Override
     public String toString() {
-        return color + ":" + value;
+        return color + "." + value;
     }
 
     public String getColor() {

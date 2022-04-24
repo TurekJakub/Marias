@@ -24,7 +24,7 @@ public class ImageViewWithCoordinates extends ImageView {
         super(image);
         inactive = false;
     }
-
+    
     public void setInactive(boolean inactive) {
         this.inactive = inactive;
     }
@@ -64,5 +64,5 @@ public class ImageViewWithCoordinates extends ImageView {
     public double getCursorY() {
         return cursorY;
     }
-
+    
 }

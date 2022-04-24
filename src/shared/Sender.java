@@ -28,6 +28,7 @@ public class Sender {
 
                 ObjectOutputStream out = new ObjectOutputStream(clientSockets[i].getOutputStream());
                 out.writeObject(data);
+                System.err.println("Send");
                 out.flush();
             }
 
@@ -44,12 +45,6 @@ public class Sender {
             out.flush();
         } catch (IOException ex) {
             Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
 
     }
