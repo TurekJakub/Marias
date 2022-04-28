@@ -11,7 +11,8 @@ import java.io.Serializable;
  *
  * @author jakub
  */
-public class Card implements Serializable{
+public class Card implements Serializable, Comparable<Card> {
+
     private String value;
     private String color;
 
@@ -33,10 +34,21 @@ public class Card implements Serializable{
         return value;
     }
 
-    
-   
-    
-    
-    
-    
+    @Override
+    public int compareTo(Card o) {
+
+        return Integer.compare(CardManager.VALUES_OF_CARDS.indexOf(this.value), CardManager.VALUES_OF_CARDS.indexOf(o.value));
+
+    }
+
+    public int compareTo(String value) {
+
+        if (CardManager.VALUES_OF_CARDS.indexOf(this.value) > CardManager.VALUES_OF_CARDS.indexOf(value)) {
+            return 1;
+        } else {
+            return -1;
+
+        }
+    }
+
 }

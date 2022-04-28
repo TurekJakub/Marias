@@ -19,6 +19,7 @@ public class ImageViewWithCoordinates extends ImageView {
     private double cursorX;
     private double cursorY;
     private boolean inactive;
+    private String cardInfo;
 
     public ImageViewWithCoordinates(Image image) {
         super(image);
@@ -64,5 +65,14 @@ public class ImageViewWithCoordinates extends ImageView {
     public double getCursorY() {
         return cursorY;
     }
+
+    public String getCardInfo() {
+        return cardInfo;
+    }
+
+    public void setCardInfo(String cardInfo) {
+        this.cardInfo = cardInfo;
+    }
+    
     
 }

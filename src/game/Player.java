@@ -6,6 +6,7 @@
 package game;
 
 import java.util.LinkedList;
+import java.util.List;
 import shared.Card;
 
 /**
@@ -15,19 +16,20 @@ import shared.Card;
 public class Player {
 
     private int points;
-    private LinkedList<Card> cards;
+    private List<Card> cards;
     private String name;
 
     public Player(int points, String name) {
         this.points = points;
         this.name = name;
+      
     }
 
     public String getName() {
         return name;
     }
 
-    public LinkedList<Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 
@@ -43,8 +45,8 @@ public class Player {
         cards.remove(card);
     }
 
-    public void setCards(LinkedList<Card> cards) {
-        this.cards = cards;
+    public void setCards(List<Card> cards) {
+        this.cards.addAll(cards);
     }
 
     @Override

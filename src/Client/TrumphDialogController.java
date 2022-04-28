@@ -28,7 +28,7 @@ public class TrumphDialogController implements Initializable {
      */
     @FXML
     ChoiceBox trumphBox;
-    GameScreen gameScreen;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         trumphBox.getItems().addAll("Listy", "Kule", "Žaludy", "Srdce");
@@ -36,15 +36,12 @@ public class TrumphDialogController implements Initializable {
 
     public void handelClickOk(MouseEvent e) {
         String trumph = (String) trumphBox.getSelectionModel().getSelectedItem();
-        gameScreen.setTrumphColor(trumph);
-        Button b  = (Button) e.getSource();
+        Client.getClientInstance().sendData(trumph);
+        Button b = (Button) e.getSource();
         Stage stage = (Stage) b.getScene().getWindow();
         stage.close();
     }
 
-    public void setGameScreen(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
-    }
-    
+   
 
 }

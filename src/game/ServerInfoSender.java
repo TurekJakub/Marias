@@ -20,16 +20,18 @@ import java.util.logging.Logger;
  */
 public class ServerInfoSender extends Thread {
 
-    DatagramSocket socket;
-    byte[] buffer;
-    InetAddress group;
-    boolean interupted;
+    private DatagramSocket socket;
+    private byte[] buffer;
+    private  InetAddress adress;
+    private boolean interupted;
     private final int COLDOWN;
+    private final int port;
 
     public ServerInfoSender(String message) {
         try {
             socket = new DatagramSocket();
-            group = InetAddress.getByName("239.0.0.0");
+            socket.setBroadcast(true);
+            adress = InetAddress.getByName("255.255.255.255");
         } catch (SocketException ex) {
             Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
@@ -38,12 +40,13 @@ public class ServerInfoSender extends Thread {
         buffer = message.getBytes();
         interupted = false;
         COLDOWN = 2000;
+        port =49152;
     }
 
     @Override
     public void run() {
         while (!interupted) {
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, 4446);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, adress, port);
             try {
                 socket.send(packet);
 

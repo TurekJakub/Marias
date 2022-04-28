@@ -7,8 +7,6 @@ package Client;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -31,7 +29,6 @@ public class PlayWithDialogController implements Initializable {
     ChoiceBox colorChoice;
     @FXML
     ChoiceBox valueChoice;
-    GameScreen gameScreen;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -41,15 +38,11 @@ public class PlayWithDialogController implements Initializable {
     }
 
     public void handelClickOk(MouseEvent e) {
-
-        gameScreen.setPlayWith((String) valueChoice.getSelectionModel().getSelectedItem(), (String) colorChoice.getSelectionModel().getSelectedItem());
+        Card c = new Card((String) valueChoice.getSelectionModel().getSelectedItem(), (String) colorChoice.getSelectionModel().getSelectedItem());
+        Client.getClientInstance().sendData(c);
         Button b = (Button) e.getSource();
         Stage stage = (Stage) b.getScene().getWindow();
         stage.close();
-    }
-
-    public void setGameScreen(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
     }
 
 }

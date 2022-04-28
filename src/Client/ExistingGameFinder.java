@@ -21,15 +21,17 @@ import java.util.logging.Logger;
 public class ExistingGameFinder extends Thread {
 
     private final byte[] buffer;
-    private List<ServerPrametr> existingGames;
+    private final List<ServerPrametr> existingGames;
     MulticastSocket socket;
     InetAddress group;
     boolean interupted;
+    private final int port;
 
     public ExistingGameFinder() {
+        port = 49152;
         try {
-            socket = new MulticastSocket(4446);
-            group = InetAddress.getByName("239.0.0.0");
+            socket = new MulticastSocket(port);
+           
         } catch (IOException ex) {
 
         }
@@ -41,11 +43,7 @@ public class ExistingGameFinder extends Thread {
     @Override
     public void run() {
 
-        try {
-            socket.joinGroup(group);
-        } catch (IOException ex) {
-            Logger.getLogger(ExistingGameFinder.class.getName()).log(Level.SEVERE, null, ex);
-        }
+      
         while (!interupted) {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
@@ -55,7 +53,7 @@ public class ExistingGameFinder extends Thread {
                 Logger.getLogger(ExistingGameFinder.class.getName()).log(Level.SEVERE, null, ex);
             }
             String[] s = new String(packet.getData(), 0, packet.getLength()).split(":");
-            ServerPrametr parametr = new ServerPrametr(s[0], s[2], Integer.parseInt(s[1]));
+            ServerPrametr parametr = new ServerPrametr(s[0], s[2], Integer.parseInt(s[1]));         
             if (!existingGames.contains(parametr)) {
                 existingGames.add(parametr);
             }

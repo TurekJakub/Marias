@@ -24,38 +24,65 @@ import shared.Receiver;
  */
 public class Client extends Thread {
 
-    private final Socket clientSocket;
-    private ArrayList<String> playersNames;
+    private static Client client;
+    private Socket clientSocket;
+    private List<String> playersNames;
     private final String name;
     private final Sender sender;
     private final Receiver receiver;
     private final GameScreen gameScreen;
+    private final ScreenManager screenManager;
     private Card lastCard;
-    private final CardManager manager;
+    private Card playWith;
+    private List<Card> cards;
+    private String trumphColor;
 
-    public Client(String address, int port, String name, GameScreenController cont) throws IOException {
-        this.clientSocket = new Socket(address, port);
+    GameScreenController controller;
+
+    private Client(String address, int port, String name, GameScreenController cont) {
+        try {
+            this.clientSocket = new Socket(address, port);
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.name = name;
         receiver = new Receiver();
         sender = new Sender();
-        manager = new CardManager();
-        gameScreen = new GameScreen(null, cont);
+        controller = cont;
         playersNames = new ArrayList<>();
         lastCard = null;
+        gameScreen = new GameScreen();
+        screenManager = new ScreenManager();
+
+    }
+
+    public static Client getClientInstance(String address, int port, String name, GameScreenController cont) {
+        if (client == null) {
+            client = new Client(address, port, name, cont);
+        }
+        return client;
+
+    }
+
+    public static Client getClientInstance() {
+        return client;
+    }
+
+    public void sendData(Object Data) {
+
+        sender.SingelsendData(Data, clientSocket);
 
     }
 
     private void initialize() {
         sender.SingelsendData(name, clientSocket);
         playersNames = (ArrayList<String>) receiver.read(clientSocket);
-        gameScreen.setCards((List<Card>) receiver.read(clientSocket));
-        for (String s : playersNames) {
-            System.err.println(s);
-        }
+        cards = (List<Card>) receiver.read(clientSocket);
+
         Platform.runLater(
                 () -> {
-                    gameScreen.initializePlayersInfo(playersNames, playersNames.indexOf(name));
-                    gameScreen.dealCards();
+                    controller.initializePlayersInfo(playersNames, playersNames.indexOf(name));
+                    controller.dealCards(gameScreen.getImagesStreams(cards));
                 }
         );
 
@@ -70,21 +97,22 @@ public class Client extends Thread {
             try {
                 Object data = receiver.read(clientSocket);
                 if (data.getClass() == Class.forName("java.lang.Boolean")) {
-                    if (gameScreen.gettrumphColor() == null) {
+                    if (trumphColor == null) {
                         Platform.runLater(
                                 () -> {
-                                    gameScreen.showDialog(gameScreen, "trumphDialog.fxml");
-                                    gameScreen.showDialog(gameScreen, "playWithDialog.fxml");
+                                    try {
+                                        screenManager.showDialog("trumphDialog.fxml");
+                                        screenManager.showDialog("playWithDialog.fxml");
+                                    } catch (IOException ex) {
+                                        screenManager.showExceptio(ex);
+                                    }
                                 }
                         );
-
-                        sender.SingelsendData(gameScreen.gettrumphColor(), clientSocket);
-                        sender.SingelsendData(gameScreen.playWith, clientSocket);
                     }
                     if (roundColor == null) {
                         Platform.runLater(
                                 () -> {
-                                    gameScreen.activatePlayableCards("0", "0", "0");
+                                    activatePlayableCards("O", "O", "O", cards);
                                 }
                         );
 
@@ -93,7 +121,7 @@ public class Client extends Thread {
                         Platform.runLater(
                                 () -> {
 
-                                    gameScreen.activatePlayableCards(roundColor, lastCard.getColor(), lastCard.getValue());
+                                    activatePlayableCards(roundColor, lastCard.getColor(), lastCard.getValue(), cards);
                                 }
                         );
 
@@ -101,18 +129,18 @@ public class Client extends Thread {
                 }
                 if (data.getClass() == Class.forName("shared.Card")) {
                     Card c = (Card) data;
-                    if (Arrays.asList(manager.getCOLORS_OF_CARDS()).contains(c.getColor())) {
+                    if (Arrays.asList(CardManager.COLORS_OF_CARDS).contains(c.getColor())) {
                         lastCard = c;
                         Platform.runLater(
                                 () -> {
-                                    gameScreen.showPlayedCard(c);
+                                    showPlayedCard(c);
                                 }
                         );
 
                     } else {
                         Platform.runLater(
                                 () -> {
-                                    gameScreen.setPlayWith(c, (String) receiver.read(clientSocket));
+                                    setPlayWith(c, (String) receiver.read(clientSocket));
                                 });
                     }
 
@@ -121,7 +149,7 @@ public class Client extends Thread {
                     int points = (int) data;
                     Platform.runLater(
                             () -> {
-                                gameScreen.updatePoints((String) receiver.read(clientSocket), points);
+                                updatePoints((String) receiver.read(clientSocket), points);
                             }
                     );
 
@@ -130,18 +158,54 @@ public class Client extends Thread {
                 if (data.getClass() == Class.forName("java.lang.String")) {
                     Platform.runLater(
                             () -> {
-                                gameScreen.setTrumphColor((String) receiver.read(clientSocket));
+                                trumphColor = ((String) receiver.read(clientSocket));
                             }
                     );
 
                 }
 
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                screenManager.showExceptio(ex);
             }
-            gameScreen.waitUntilNextTurn();
-
+            waitUntilNextTurn();
         }
+
+    }
+
+    public void activatePlayableCards(String roundColor, String lastColor, String lastValue, List<Card> cards) {
+        boolean[] indexes = null;
+        boolean oneActivate = false;
+        if (lastColor.equals(roundColor)) {
+            indexes = gameScreen.findPlayableCards(roundColor, lastValue, cards);
+        }
+        if (Arrays.asList(indexes).indexOf(true) != -1) {
+            if (lastColor.equals(trumphColor)) {
+                indexes = gameScreen.findPlayableCards(trumphColor, lastValue, cards);
+            } else {
+                indexes = gameScreen.findPlayableCards(trumphColor, "O", cards);
+            }
+        }
+        if (!oneActivate) {
+            Arrays.fill(indexes, true);
+        }
+        controller.activatePlayable(indexes);
+    }
+
+    public void waitUntilNextTurn() {
+        controller.deactivateAllCards();
+    }
+
+    public void showPlayedCard(Card playedCard) {
+        controller.showPlayedCard(gameScreen.getImageInputStream(playedCard));
+
+    }
+
+    public void updatePoints(String playerName, int points) {
+        controller.updatePoints(playerName, points);
+    }
+
+    public void setPlayWith(Card playWith, String playerName) {
+        controller.setPlayWith(playWith, playerName);
     }
 
 }

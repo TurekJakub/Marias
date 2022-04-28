@@ -5,6 +5,7 @@
  */
 package Client;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,10 +118,11 @@ public class GameScreenController implements Initializable {
         ImageViewWithCoordinates i = (ImageViewWithCoordinates) event.getSource();
         boolean b = i.getLayoutX() > 300 && i.getLayoutX() < 900;
         boolean a = i.getLayoutY() > 275 && i.getLayoutY() < 500;
-        if (b && a) {
-            System.err.println("Je to tam!");
+        if (b && a && !i.isInactive()) {
+            
             i.setLayoutX(300);
             i.setLayoutY(275);
+          //  Client.getClientInstance().sendData(a);
 
         } else {
             i.setLayoutX(i.getDefaultX());
@@ -132,7 +134,8 @@ public class GameScreenController implements Initializable {
     @FXML
     private ImageViewWithCoordinates[] initializeCards() { // Nepříliš duležitá metoda, která vrátí pole ImageView s nastavenými parametry
         ImageViewWithCoordinates[] imageViews = new ImageViewWithCoordinates[8];
-        Image image = new Image("file:src/pictures/card.png");
+        InputStream u = getClass().getResourceAsStream("/pictures/card.png");
+        Image image = new Image(u);
 
         for (int i = 0; i < 8; i++) {
             imageViews[i] = new ImageViewWithCoordinates(image);
@@ -170,8 +173,12 @@ public class GameScreenController implements Initializable {
     }
 
     @FXML
-    public void activatePlayable(int index) {
-        cardsImage[index].setInactive(false);
+    public void activatePlayable(boolean[] indexes) {
+        for (int i = 0; i < indexes.length; i++) {
+
+            cardsImage[i].setInactive(indexes[i]);
+
+        }
     }
 
     @FXML
@@ -182,7 +189,7 @@ public class GameScreenController implements Initializable {
     }
 
     @FXML
-    public void dealCards(String[] imagesURL) {
+    public void dealCards(InputStream[] imagesURL) {
         for (int i = 0; i < imagesURL.length; i++) {
 
             cardsImage[i].setImage(new Image(imagesURL[i]));
@@ -192,15 +199,15 @@ public class GameScreenController implements Initializable {
     }
 
     @FXML
-    public void showPlayedCard(String imageURL) {
+    public void showPlayedCard(InputStream inputStream) {
 
-        playedCatds[numberPlayedCards].setImage(new Image(imageURL));
+        playedCatds[numberPlayedCards].setImage(new Image(inputStream));
         numberPlayedCards++;
 
     }
 
     @FXML
-    public void initializePlayersInfo(ArrayList<String> names, int thisIndex) {
+    public void initializePlayersInfo(List<String> names, int thisIndex) {
 
         nameLabels[thisIndex].setText("Jméno: " + names.get(thisIndex));
         for (int i = 0; i < 4; i++) {
