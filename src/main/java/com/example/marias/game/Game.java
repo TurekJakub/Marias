@@ -206,7 +206,7 @@ public class Game extends Thread {
     }
 
     private String evaluateGame() {
-        int indexOfplayWith = getPlayWithIndex(cratPlayWith(playWith));
+        int indexOfplayWith = getPlayWithIndex(cardPlayWith(playWith));
         String team2Names = "";
         int team2Points = 0;
         int team1Points = 0;
@@ -235,7 +235,7 @@ public class Game extends Thread {
 
     }
 
-    private Card cratPlayWith(Card playWithFrom) {
+    public Card cardPlayWith(Card playWithFrom) {
         String color;
         String value;
         if (playWithFrom.getValue().equals("Spodek")) {
@@ -251,7 +251,7 @@ public class Game extends Thread {
 
     }
 
-    private String stringToColor(String colorString) {
+    public String stringToColor(String colorString) {
         String color;
         if (colorString.equals("Žaludy")) {
             color = "Ž";
