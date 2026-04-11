@@ -8,15 +8,18 @@ package com.example.marias.shared;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.example.marias.game.Game;
 
 /**
  *
  * @author jakub
  */
 public class Receiver  {
-
+    private static final Logger logger = LogManager.getLogger(Receiver.class);
     public Receiver() {
 
     }
@@ -31,12 +34,11 @@ public class Receiver  {
             try {
                 o = in.readObject();
             } catch (ClassNotFoundException ex) {
-
+                logger.fatal("Failed to serialize received data. Err: " + ex.getMessage());
             }
             return o;
         } catch (IOException ex) {
-            Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);
-
+            logger.fatal("Connection error occurred while receiving data. Err: " + ex.getMessage());
         }
         return o;
     }

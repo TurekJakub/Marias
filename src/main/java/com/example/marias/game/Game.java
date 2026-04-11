@@ -5,6 +5,7 @@
  */
 package com.example.marias.game;
 
+import com.example.marias.client.Client;
 import com.example.marias.shared.Card;
 import com.example.marias.shared.Receiver;
 import com.example.marias.shared.Sender;
@@ -16,14 +17,16 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author jakub
  */
 public class Game extends Thread {
+    private static final Logger logger = LogManager.getLogger(Game.class);
 
     private ServerSocket server;
     private Socket[] playerSockets;
@@ -38,6 +41,8 @@ public class Game extends Thread {
     String name;
 
     public Game(int port, String name) throws IOException {
+        
+
         receiver = new Receiver();
 
         players = new Player[]{new Player(0, null), new Player(0, null),
@@ -48,7 +53,7 @@ public class Game extends Thread {
 
     }
 
-    private void creatGame(int port, String name) throws UnknownHostException, IOException {
+    private void createGame(int port, String name) throws UnknownHostException, IOException {
         String message = name + ":" + String.valueOf(port) + ":" + InetAddress.getLocalHost().getHostAddress().trim();
         infoSender = new ServerInfoSender(message);
         infoSender.start();
@@ -62,7 +67,7 @@ public class Game extends Thread {
     }
 
     private void connectPlayers() {
-
+        logger.info("Waiting for players to join...");
         Socket[] sockets = new Socket[4];
         for (int i = 0; i < sockets.length; i++) {
             try {
@@ -71,11 +76,13 @@ public class Game extends Thread {
                 continue;
             }
 
-            System.err.println("Join");
+
+            logger.info("New player joined the game. Currently " + i + " out of 4 players connected.");
 
         }
         infoSender.interrupt();
         playerSockets = sockets;
+        logger.info("All players joined, closing the lobby and starting the game.");
     }
 
     private void setAndSendNames() throws IOException {
@@ -87,7 +94,7 @@ public class Game extends Thread {
 
         }
         names.add(4, players[0].getName());
-        sender.MultisendData(names, null, playerSockets);
+        sender.MultiSendData(names, null, playerSockets);
     }
 
     private void sendPlayersCards() throws IOException {
@@ -95,7 +102,7 @@ public class Game extends Thread {
         for (int i = 0; i < 4; i++) {
 
             players[i].setCards(manager.getPlayersCardsSet(i));
-            System.out.println(players[i].getCards().size());
+            logger.info("Player " + i + " now has " + players[i].getCards().size() + " cards.");
             sender.SingelsendData(players[i].getCards(), playerSockets[i]);
 
         }
@@ -113,11 +120,11 @@ public class Game extends Thread {
             trumphColor = stringToColor((String) receiver.read(playerSockets[0]));
             manager.setTRUMPHCOLOR(trumphColor);
 
-            sender.MultisendData(trumphColor, null, playerSockets);
-            sender.MultisendData(playWith, null, playerSockets);
+            sender.MultiSendData(trumphColor, null, playerSockets);
+            sender.MultiSendData(playWith, null, playerSockets);
 
         } catch (IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            logger.fatal("Failed to create new game lobby. Err: " + ex.getMessage());
         }
 
     }
@@ -126,30 +133,31 @@ public class Game extends Thread {
     public void run() {
 
         try {
-            creatGame(port, name);
+            createGame(port, name);
             initialize();
             startGameLoop();
         } catch (IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            logger.fatal("Unexpected server error. Err: " + ex.getMessage());
         }
 
+        logger.info("Game ended, closing the session.");
     }
 
     private Card play(int index) {
         boolean startPlay = true;
         try {
             sender.SingelsendData(startPlay, playerSockets[index]);
-            sender.MultisendData("Hraje: " + players[index].getName(), playerSockets[index], playerSockets);
+            sender.MultiSendData("Hraje: " + players[index].getName(), playerSockets[index], playerSockets);
             sender.SingelsendData("Jste na tahu", playerSockets[index]);
         } catch (IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            logger.fatal("Failed to notify player about start of his turn. Err: " + ex.getMessage());
         }
         Card c = (Card) receiver.read(playerSockets[index]);
         players[index].updateCards(c);
         try {
-            sender.MultisendData(c, playerSockets[index], playerSockets);
+            sender.MultiSendData(c, playerSockets[index], playerSockets);
         } catch (IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            logger.fatal("Failed to sync players action with server. Err: " + ex.getMessage());
         }
         return c;
     }
@@ -168,16 +176,16 @@ public class Game extends Thread {
         return playedCards;
     }
 
-    private void evaluateRoud(List<Card> playedCards, int startIndex) {
+    private void evaluateRound(List<Card> playedCards, int startIndex) {
 
         int indexOfWin = manager.getWinerOfRound(playedCards, startIndex);
         int points = manager.getRoundPoints(playedCards);
         players[indexOfWin].updatePoints(points);
         try {
-            sender.MultisendData(points, null, playerSockets);
-            sender.MultisendData(players[indexOfWin].getName(), null, playerSockets);
+            sender.MultiSendData(points, null, playerSockets);
+            sender.MultiSendData(players[indexOfWin].getName(), null, playerSockets);
         } catch (IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            logger.fatal("Failed to send now game state to clients. Err: " + ex.getMessage());
         }
 
     }
@@ -190,10 +198,10 @@ public class Game extends Thread {
                 startIndex = 0;
             }
             playedCards = playOneRound(startIndex);
-            evaluateRoud(playedCards, startIndex);
+            evaluateRound(playedCards, startIndex);
             startIndex++;
         }
-        sender.MultisendData(evaluateGame(), null, playerSockets);
+        sender.MultiSendData(evaluateGame(), null, playerSockets);
 
     }
 

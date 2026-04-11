@@ -3,6 +3,8 @@ module com.example.marias {
     requires javafx.fxml;
     requires java.logging;
 
+    requires org.apache.logging.log4j;
+    requires org.apache.logging.log4j.core; 
 
     exports com.example.marias.client;
     opens com.example.marias.client to javafx.fxml;

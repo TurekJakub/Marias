@@ -9,25 +9,29 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  *
  * @author jakub
  */
 public class Sender {
+    private static final Logger logger = LogManager.getLogger(Sender.class);
 
     public Sender() {
 
     }
 
-    public void MultisendData(Object data, Socket sender, Socket[] clientSockets) throws IOException {
+    public void MultiSendData(Object data, Socket sender, Socket[] clientSockets) throws IOException {
         for (int i = 0; i < clientSockets.length; i++) {
 
             if (!clientSockets[i].equals(sender)) {
 
                 ObjectOutputStream out = new ObjectOutputStream(clientSockets[i].getOutputStream());
                 out.writeObject(data);
-                System.err.println("Send");
                 out.flush();
+                logger.info("Data successfully send.");
             }
 
         }

@@ -11,14 +11,16 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author jakub
  */
 public class ExistingGameFinder extends Thread {
+    private static final Logger logger = LogManager.getLogger(ExistingGameFinder.class);
 
     private final byte[] buffer;
     private final List<ServerPrametr> existingGames;
@@ -49,7 +51,7 @@ public class ExistingGameFinder extends Thread {
             try {
                 socket.receive(packet);
             } catch (IOException ex) {
-                Logger.getLogger(ExistingGameFinder.class.getName()).log(Level.SEVERE, null, ex);
+                logger.fatal("Discovering active game lobbies failed. Err :" + ex.getMessage());
             }
             String[] s = new String(packet.getData(), 0, packet.getLength()).split(":");
             ServerPrametr parametr = new ServerPrametr(s[0], s[2], Integer.parseInt(s[1]));

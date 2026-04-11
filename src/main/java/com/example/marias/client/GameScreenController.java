@@ -24,8 +24,9 @@ import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * FXML Controller class
@@ -33,6 +34,7 @@ import java.util.logging.Logger;
  * @author jakub
  */
 public class GameScreenController implements Initializable {
+    private static final Logger logger = LogManager.getLogger(GameScreenController.class);
 
     /**
      * Initializes the controller class.
@@ -142,7 +144,7 @@ public class GameScreenController implements Initializable {
                     
 
                 } catch (IOException ex) {
-                    Logger.getLogger(GameScreenController.class.getName()).log(Level.SEVERE, null, ex);
+                   logger.fatal("Failed to sync performed action with server. Err: " + ex.getMessage());
                 }
             } else {
                 i.setLayoutX(i.getDefaultX());

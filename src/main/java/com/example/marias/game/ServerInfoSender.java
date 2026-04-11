@@ -10,52 +10,53 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author jakub
  */
 public class ServerInfoSender extends Thread {
+    private static final Logger logger = LogManager.getLogger(ServerInfoSender.class);
 
     private DatagramSocket socket;
     private byte[] buffer;
-    private InetAddress adress;
+    private InetAddress address;
     private boolean interupted;
-    private final int COLDOWN;
+    private final int COOLDOWN;
     private final int port;
 
     public ServerInfoSender(String message) {
         try {
             socket = new DatagramSocket();
             socket.setBroadcast(true);
-            adress = InetAddress.getByName("255.255.255.255");
-        } catch (SocketException ex) {
-            Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
+            address = InetAddress.getByName("255.255.255.255");
+        } catch (SocketException | UnknownHostException ex) {
+            logger.fatal("Failed to initialize the lobby discovery job. Err: " + ex.getMessage());
         }
+
         buffer = message.getBytes();
         interupted = false;
-        COLDOWN = 2000;
+        COOLDOWN = 2000;
         port = 49152;
     }
 
     @Override
     public void run() {
         while (!interupted) {
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, adress, port);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
             try {
                 socket.send(packet);
 
             } catch (IOException ex) {
-                Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
+                logger.fatal("Failed to broadcast game lobby discovery packet. Err: " + ex.getMessage());
             }
             try {
-                Thread.sleep(COLDOWN);
+                Thread.sleep(COOLDOWN);
             } catch (InterruptedException ex) {
-                Logger.getLogger(ServerInfoSender.class.getName()).log(Level.SEVERE, null, ex);
+                logger.fatal("Failed to cooldown the lobby discovery job after failing. Err: " + ex.getMessage());
             }
 
         }

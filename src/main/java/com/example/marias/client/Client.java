@@ -10,14 +10,16 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.example.marias.shared.Card;
 import com.example.marias.shared.CardManager;
 import com.example.marias.shared.Receiver;
 import com.example.marias.shared.Sender;
+
 import javafx.application.Platform;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -25,6 +27,7 @@ import javafx.application.Platform;
  * @author jakub
  */
 public class Client extends Thread {
+    private static final Logger logger = LogManager.getLogger(Client.class);
 
     private static Client client;
     private Socket clientSocket;
@@ -46,7 +49,7 @@ public class Client extends Thread {
         try {
             this.clientSocket = new Socket(address, port);
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.warn("Attempted an action with a null player.");
         }
         this.name = name;
         receiver = new Receiver();
@@ -80,7 +83,7 @@ public class Client extends Thread {
     private void initialize() throws IOException {
         sender.SingelsendData(name, clientSocket);
         playersNames = (List<String>) receiver.read(clientSocket);
-        System.out.println(playersNames.size());
+        logger.info("There are currently " + playersNames.size() + " player in the lobby.");
         cards = (List<Card>) receiver.read(clientSocket);
 
         Platform.runLater(
@@ -97,7 +100,7 @@ public class Client extends Thread {
         try {
             initialize();
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+          logger.warn(ex.getMessage());
         }
 
         int playedRound = 0;

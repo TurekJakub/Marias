@@ -8,8 +8,9 @@ package com.example.marias.client;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javafx.application.Platform;
 
@@ -18,6 +19,7 @@ import javafx.application.Platform;
  * @author jakub
  */
 public class ExistingGamesScreen extends Thread {
+    private static final Logger logger = LogManager.getLogger(ExistingGamesScreen.class);
 
     private final ExistingGamesScreenController existingGamesController;
     private List<ServerPrametr> parametrs;
@@ -38,7 +40,7 @@ public class ExistingGamesScreen extends Thread {
         try {
             sleep(5000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(ExistingGamesScreen.class.getName()).log(Level.SEVERE, null, ex);
+            logger.fatal("Unexpected error while discovering active game lobbies. Err: " + ex.getMessage());
         }
         while (!interupted) {
             parametrs = finder.getExistingGames();
@@ -46,8 +48,7 @@ public class ExistingGamesScreen extends Thread {
             Platform.runLater(
                     () -> {
                         existingGamesController.createViewContent(parametrs);
-                    }
-            );
+                    });
 
             try {
                 sleep(COLDOWN);
@@ -60,9 +61,9 @@ public class ExistingGamesScreen extends Thread {
 
     public void joinGame(int index, GameScreenController cont, String name) throws IOException {
         ServerPrametr serverPrametr = parametrs.get(index);
-        Client client = Client.getClientInstance(serverPrametr.getIp(), serverPrametr.getPort(),name, cont);
+        Client client = Client.getClientInstance(serverPrametr.getIp(), serverPrametr.getPort(), name, cont);
         client.start();
-    
+
     }
 
     @Override
