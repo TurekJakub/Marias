@@ -3,6 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+/**
+ * @mainpage Mariáš
+ * 
+ *  Following documentation describes simple game project. This project is multiplayer game, that allows
+ *  four players to play popular card game Mariáš over local network via simple graphical interface
+ * 
+ *  This documentation describes core components of the project, game logic classes, MVC design, interfaces
+ *  of individual modules and their dependencies.     
+ * 
+ *  
+*/
 package com.example.marias.client;
 
 
